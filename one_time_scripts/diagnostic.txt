@@ -1,6 +1,0 @@
-{
-  "cores": 8,
-  "ram": 7.421 ,
-  "free space": 131,
-  "total space": 224
-}
