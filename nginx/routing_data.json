@@ -1,0 +1,24 @@
+{
+  "servers": [
+    {
+      "ip": "192.41.64.17",
+      "owner": "kian",
+      "resources": {
+        "cores": 2,
+        "ram": 4,
+        "free space": 400,
+        "total space": 500
+      },
+      "services": [1],
+      "ports": {"ssh": 50}
+    }
+  ],
+  "services": [
+    {
+      "id": 1,
+      "name": "python.http",
+      "localport": 8000,
+      "nginxport": 50000
+    }
+  ]
+}

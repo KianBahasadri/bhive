@@ -1,5 +1,21 @@
 #!/bin/bash
 
+if [[ $# != 1 ]]
+then
+  echo 'Usage: ./server_initialize.sh <ssh private key>'
+  exit 1
+fi
+keyfile="$1"
+
+if  [[ $(stat -c "%a" "$keyfile") != 400 ]]
+then
+  echo "Set $keyfile permissions to 400"
+  exit 1
+fi
+
+echo Hardening Local Security
+./apply_security_rules.sh server_security_rules.json
+
 echo Running Hardware Diagnostic
 cores=$(nproc --all)
 ram=$(awk '/MemTotal/ { printf "%.3f \n", $2/1024/1024 }' /proc/meminfo)
@@ -28,6 +44,9 @@ echo TODO: implement this
 echo
 echo Sending message to https://bahasadri.com/add-server
 #curl --upload-file diagnostic.txt https://bahasadri.com/add-server
+
+echo Openining ssh access from orchestrator server
+ssh -N -o StrictHostKeyChecking=accept-new -R localhost:0:localhost:22 ssh.bahasadri.com -i droplet.pem
 
 echo
 echo This server has now been added to the BHive
