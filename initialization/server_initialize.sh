@@ -45,16 +45,18 @@ echo TODO: implement this
 
 echo
 echo Sending message to https://bahasadri.com/add-server
-#curl --upload-file diagnostic.txt https://bahasadri.com/add-server
+curl --upload-file diagnostic.txt https://bahasadri.com/add-server > ~/ssh_key.pem
+chmod 400 ~/ssh_key.pem
 
 echo
 echo Openining ssh access from orchestrator server
-ssh -N -o StrictHostKeyChecking=accept-new -R localhost:0:localhost:22 ssh.bahasadri.com -i droplet.pem
+
+ssh -N -o StrictHostKeyChecking=accept-new -R localhost:0:localhost:22 ssh.bahasadri.com -i ssh_key.pem
 
 echo
 echo Overwrting ssh_config
 echo Disabling ssh password authentication
-cat > /etc/ssh_config <<- END
+cat > /etc/ssh/ssh_config <<- END
 Host *
   PasswordAuthentication no
   ChallengeResponseAuthentication no
@@ -81,5 +83,4 @@ echo TODO
 echo
 echo This server has now been added to the BHive
 echo WELCOME ABOARD! 🥳🥳🥳
-
 

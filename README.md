@@ -4,7 +4,10 @@
 im going to avoid my usual mistake of writing the documentation before i make the project and then having to rewrite it because i did everything differently than how i planned to :)  
 Plans can be found on my channel: https://www.youtube.com/watch?v=F4nBRwdqYw0
 
-Note: to avoid confusion, the orchestrator/root node should always be referred to as the "Hub".
+Notes:
+- to avoid confusion, the orchestrator/root node should always be referred to as the "Hub".
+- running any of the scripts may greatly fuck up your system, YOU HAVE BEEN WARNED
+- ill be making endpoints with fastapi because at the end of the day im 1 guy maintaining this shit
 
 # Roadmap
 
