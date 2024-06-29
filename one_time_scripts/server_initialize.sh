@@ -1,21 +1,23 @@
 #!/bin/bash
 
+if [[ $(whoami) != 'root' ]]
+then
+  echo this script needs to be run as root
+  exit 1
+fi
+
 if [[ $# != 1 ]]
 then
   echo 'Usage: ./server_initialize.sh <ssh private key>'
   exit 1
 fi
+
+echo
+echo Setting Permissions on Keyfile
 keyfile="$1"
+chmod 400 "$keyfile"
 
-if  [[ $(stat -c "%a" "$keyfile") != 400 ]]
-then
-  echo "Set $keyfile permissions to 400"
-  exit 1
-fi
-
-echo Hardening Local Security
-./apply_security_rules.sh server_security_rules.json
-
+echo
 echo Running Hardware Diagnostic
 cores=$(nproc --all)
 ram=$(awk '/MemTotal/ { printf "%.3f \n", $2/1024/1024 }' /proc/meminfo)
@@ -45,10 +47,39 @@ echo
 echo Sending message to https://bahasadri.com/add-server
 #curl --upload-file diagnostic.txt https://bahasadri.com/add-server
 
+echo
 echo Openining ssh access from orchestrator server
 ssh -N -o StrictHostKeyChecking=accept-new -R localhost:0:localhost:22 ssh.bahasadri.com -i droplet.pem
 
 echo
+echo Overwrting ssh_config
+echo Disabling ssh password authentication
+cat > /etc/ssh_config <<- END
+Host *
+  PasswordAuthentication no
+  ChallengeResponseAuthentication no
+  PubkeyAuthentication yes
+  SendEnv LANG LC_*
+  HashKnownHosts yes
+END
+
+echo
+echo setting up ufw
+ufw enable
+ufw default deny incoming
+echo Current UFW Settings:
+ufw status verbose
+
+echo
+echo removing sudo group
+echo TODO
+
+echo
+echo setting new root user password
+echo TODO
+
+echo
 echo This server has now been added to the BHive
 echo WELCOME ABOARD! 🥳🥳🥳
+
 
