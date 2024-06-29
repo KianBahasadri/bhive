@@ -13,6 +13,11 @@ then
 fi
 
 echo
+echo Installing Required Packages
+sudo apt install unattended-upgrades
+echo TODO: make sure this auto configures or do it manually if not
+
+echo
 echo Setting Permissions on Keyfile
 keyfile="$1"
 chmod 400 "$keyfile"
