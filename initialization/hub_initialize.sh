@@ -33,7 +33,7 @@ pip install -r requirements.txt
 
 echo
 echo Starting add-server endpoint
-fastapi run add_server.py
+fastapi run add_server.py --port 8001
 
 echo
 echo removing sudo group

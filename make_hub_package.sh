@@ -9,7 +9,12 @@ tar -czf hub_package.tar.gz \
     requirements.py \
 
   -C ../initialization \
-    hub_initialize.sh
+    hub_initialize.sh \
 
+  -C ../keys \
+    bahasadri.com.crt \
+    bahasadri.com.key \
+
+echo
 echo hub_package.tar.gz has been created
 

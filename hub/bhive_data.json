@@ -19,7 +19,7 @@
     "1" : {
       "id": 1,
       "name": "python.http",
-      "nginxport": 50000
+      "port": 50000
     }
   }
 }
