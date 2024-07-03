@@ -35,7 +35,7 @@ echo $cores CPU cores
 echo $ram GB of ram
 echo $totalspace GB of total disk space
 echo $freespace GB of free disk space
-cat > diagnostic.txt <<- END
+diagnostic=$(cat <<- END
 {
   "cores": $cores,
   "ram": $ram,
@@ -43,14 +43,14 @@ cat > diagnostic.txt <<- END
   "total space": $totalspace
 }
 END
-
-echo
-echo Signing message with private key
-echo TODO: implement this
+)
 
 echo
 echo Sending message to https://bahasadri.com/add-server
-curl --upload-file diagnostic.txt https://bahasadri.com/add-server > ~/ssh_key.pem
+curl -x POST https://bahasadri.com/add-server \
+     -d "$diagnostic" \
+     -H "Content-Type: application/json" \
+     -o ~/ssh_key.pem
 chmod 400 ~/ssh_key.pem
 
 echo
