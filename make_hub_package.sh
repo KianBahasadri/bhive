@@ -6,6 +6,7 @@ tar -czf hub_package.tar.gz \
     bhive_data.json \
     find_ssh_port.sh \
     rebuild_nginx_conf.py \
+    requirements.py \
 
   -C ../initialization \
     hub_initialize.sh

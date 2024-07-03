@@ -32,7 +32,7 @@ async def add_server(diagnostic: Diagnostic, request: Request):
   new_server['resources'] = diagnostic.dict()
   ip = request.client.host
 
-  ssh_output = subprocess(['./find_ssh_port.sh', ip], capture_output=True, Text=True)
+  ssh_output = subprocess.run(['./find_ssh_port.sh', ip], capture_output=True, Text=True)
   new_server['sshport'] = ssh_output.stdout.strip()
 
     # Adding Data

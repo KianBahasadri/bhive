@@ -28,6 +28,14 @@ Host *
 END
 
 echo
+echo Installing python packages
+pip install -r requirements.txt
+
+echo
+echo Starting add-server endpoint
+fastapi run add_server.py
+
+echo
 echo removing sudo group
 echo TODO
 
