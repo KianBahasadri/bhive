@@ -36,6 +36,25 @@ echo Starting add-server endpoint
 fastapi run add_server.py --port 8001
 
 echo
+echo Configuring UFW rules
+echo Fetching Cloudflare IPs
+cloudflare_ips=$(curl -s 'https://www.cloudflare.com/ips-v4')\n \
+               $(curl -s 'https://www.cloudflare.com/ips-v6')
+echo Setting Default UFW Rules
+ufw default deny incoming
+ufw default deny outgoing
+echo Allowing Cloudflare IPs
+for ip in $cloudflare_ips; do
+    ufw allow from "$ip" to any port 443 proto tcp
+done
+echo Allowing all SSH traffic
+ufw allow ssh
+echo Reloading and Enabling ufw
+ufw enable
+ufw reload
+echo "UFW rules updated."
+
+echo
 echo removing sudo group
 echo TODO
 
