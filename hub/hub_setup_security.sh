@@ -29,16 +29,15 @@ Host *
   SendEnv LANG LC_*
   HashKnownHosts yes
 END
-ln -sf /etc/ssh_config "$buildpath"/ssh_config
+ln -sf "$buildpath"/ssh_config /etc/ssh_config
 chmod 444 "$buildpath"/ssh_config
 
 echo
 echo Configuring UFW rules
 ufw --force reset
 echo Fetching Cloudflare IPs
-cloudflare_ips="$(curl -s 'https://www.cloudflare.com/ips-v4')";
-                echo;
-               "$(curl -s 'https://www.cloudflare.com/ips-v6')"
+cloudflare_ips="$(curl -s 'https://www.cloudflare.com/ips-v4')"
+cloudflare_ips+="$(echo && curl -s 'https://www.cloudflare.com/ips-v6')"
 echo Setting Default UFW Rules
 ufw default deny incoming
 ufw default allow outgoing
