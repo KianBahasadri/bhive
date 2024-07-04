@@ -1,9 +1,9 @@
 import json
-import nginxfmt
 
 with open("server_data.json") as file:
-  data = json.loads(file.readall())
+  bhive_data = json.loads(file.readall())
 
-for server in data:
-
+for server in bhive_data['servers']:
+  
+  
 

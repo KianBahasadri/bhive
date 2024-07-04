@@ -29,6 +29,7 @@ echo Using default fail2ban configs for now
 
 echo
 echo Installing python packages
+apt install python3-pip
 pip install -r requirements.txt
 
 echo
@@ -37,7 +38,7 @@ apt install nginx
 echo Building Nginx conf
 ./rebuild_nginx_conf.py
 echo Sym-Linking nginx conf to buildpath
-ln -sf /etc/nginx/conf.d/nginx_bhive.conf "$buildpath"/nginx_bhive.conf
+ln -sf "$buildpath"/nginx_bhive.conf /etc/nginx/conf.d/nginx_bhive.conf 
 echo Sym-Linking SSL Certificates
 mkdir /etc/nginx/ssl
 ln -sf ./keys/bahasadri.com.crt /etc/nginx/ssl/bahasadri.com.crt
@@ -65,9 +66,11 @@ fastapi run add_server.py --port 8001
 
 echo
 echo Configuring UFW rules
+ufw --force reset
 echo Fetching Cloudflare IPs
-cloudflare_ips=$(curl -s 'https://www.cloudflare.com/ips-v4')\n \
-               $(curl -s 'https://www.cloudflare.com/ips-v6')
+cloudflare_ips="$(curl -s 'https://www.cloudflare.com/ips-v4')";
+                echo;
+               "$(curl -s 'https://www.cloudflare.com/ips-v6')"
 echo Setting Default UFW Rules
 ufw default deny incoming
 ufw default deny outgoing
@@ -78,8 +81,7 @@ done
 echo Allowing all SSH traffic
 ufw allow ssh
 echo Reloading and Enabling ufw
-ufw enable
-ufw reload
+ufw --force enable
 echo "UFW rules updated."
 
 echo
