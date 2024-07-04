@@ -1,17 +1,13 @@
-worker_processes auto;
+ssl_session_cache   shared;SSL;10m;
+ssl_session_timeout 10m;
+server {
+  listen              443 ssl;
+  server_name         bahasadri.com;
+  ssl_certificate     bahasadri.com.crt;
+  ssl_certificate_key bahasadri.com.key;
 
-http {
-  ssl_session_cache   shared;SSL;10m;
-  ssl_session_timeout 10m;
-  server {
-    listen              443 ssl;
-    server_name         bahasadri.com;
-    ssl_certificate     bahasadri.com.crt;
-    ssl_certificate_key bahasadri.com.key;
-
-    location /add-server {
-      proxy_pass 127.0.0.1:8001
-    }
+  location /add-server {
+    proxy_pass http://127.0.0.1:8001
   }
 }
 

@@ -8,12 +8,12 @@ fi
 
 echo
 echo Setting up fail2ban
-sudo apt install fail2ban
+apt install fail2ban
 echo Using default fail2ban configs for now
 
 echo
 echo Setting up Nginx
-sudo apt install nginx
+apt install nginx
 
 echo
 echo Overwrting ssh_config
@@ -29,7 +29,7 @@ END
 
 echo
 echo Installing python packages
-pip install -r requirements.txt
+pip install -r ../hub/requirements.txt
 
 echo
 echo Starting add-server endpoint
