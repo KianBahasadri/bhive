@@ -6,19 +6,50 @@ then
   exit 1
 fi
 
+if [[ ! -d keys ]]
+then
+  echo create keys directory and put SSL certificates inside
+  exit 1
+fi
+
+echo
+echo Setting buildpath
+mkdir build
+buildpath=$(realpath ./build)
+echo Buildpath Set: "$buildpath"
+
+echo
+echo Sym-Linking bhive_data.json
+ln -s bhive_data_empty.json bhive_data.json
+
 echo
 echo Setting up fail2ban
 apt install fail2ban
 echo Using default fail2ban configs for now
 
 echo
-echo Setting up Nginx
+echo Installing python packages
+pip install -r requirements.txt
+
+echo
+echo Installing Nginx
 apt install nginx
+echo Building Nginx conf
+./rebuild_nginx_conf.py
+echo Sym-Linking nginx conf to buildpath
+ln -sf /etc/nginx/conf.d/nginx_bhive.conf "$buildpath"/nginx_bhive.conf
+echo Sym-Linking SSL Certificates
+mkdir /etc/nginx/ssl
+ln -sf ./keys/bahasadri.com.crt /etc/nginx/ssl/bahasadri.com.crt
+ln -sf ./keys/bahasadri.com.key /etc/nginx/ssl/bahasadri.com.key
+echo Sym-Linking home.html
+mkdir /etc/nginx/html
+ln -sf home.html /etc/nginx/html/home.html
 
 echo
 echo Overwrting ssh_config
 echo Disabling ssh password authentication
-cat > /etc/ssh_config <<- END
+cat > "$buildpath"/ssh_config <<- END
 Host *
   PasswordAuthentication no
   ChallengeResponseAuthentication no
@@ -26,10 +57,7 @@ Host *
   SendEnv LANG LC_*
   HashKnownHosts yes
 END
-
-echo
-echo Installing python packages
-pip install -r ../hub/requirements.txt
+ln -sf /etc/ssh_config "$buildpath"/config
 
 echo
 echo Starting add-server endpoint

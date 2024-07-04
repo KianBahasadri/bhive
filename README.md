@@ -9,6 +9,8 @@ Notes:
 - running any of the scripts may greatly fuck up your system, YOU HAVE BEEN WARNED
 - ill be making endpoints with fastapi because at the end of the day im 1 guy maintaining this shit
 - i think ill have fastapi running independantly of nginx? i might go back on this solely for SSL reasons but in terms of nginx i think its sole role will be that of a reverse proxy. nginx will do nothing but route traffic to the worker nodes, period girl.
+- I ended up creating a proxy from nginx to fastapi... guess why (yep it was SSL)
+- i've currently hardcoded a lot of things like file locations, paths, and filenames. This should ideally be modified in the future but idk how i would do that, itd take a lot of creativity for sure
 
 # Roadmap
 

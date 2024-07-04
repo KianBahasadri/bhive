@@ -3,11 +3,14 @@ ssl_session_timeout 10m;
 server {
   listen              443 ssl;
   server_name         bahasadri.com;
-  ssl_certificate     bahasadri.com.crt;
-  ssl_certificate_key bahasadri.com.key;
+  ssl_certificate     /etc/nginx/ssl/bahasadri.com.crt;
+  ssl_certificate_key /etc/nginx/ssl/bahasadri.com.key;
 
   location /add-server {
     proxy_pass http://127.0.0.1:8001
+  }
+  location / {
+    index /etc/nginx/html/home.html
   }
 }
 
