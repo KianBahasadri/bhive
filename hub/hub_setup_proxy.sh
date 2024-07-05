@@ -49,11 +49,11 @@ ln -sf "$buildpath"/nginx_bhive.conf /etc/nginx/conf.d/nginx_bhive.conf
 
 echo
 echo Sym-Linking SSL Certificates
-mkdir /etc/nginx/ssl
+mkdir -p /etc/nginx/ssl
 ln -sf ./keys/bahasadri.com.crt /etc/nginx/ssl/bahasadri.com.crt
 ln -sf ./keys/bahasadri.com.key /etc/nginx/ssl/bahasadri.com.key
 echo Sym-Linking home.html
-mkdir /etc/nginx/html
+mkdir -p /etc/nginx/html
 ln -sf home.html /etc/nginx/html/home.html
 
 echo

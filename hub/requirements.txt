@@ -1,6 +1,6 @@
 annotated-types==0.7.0
 anyio==4.4.0
-certifi==2024.6.2
+certifi==2024.7.4
 click==8.1.7
 dnspython==2.6.1
 email_validator==2.2.0
@@ -15,11 +15,12 @@ Jinja2==3.1.4
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
-nginxfmt==1.2.2
+nginxparser_eb==0.0.9
 orjson==3.10.6
-pydantic==2.8.0
-pydantic_core==2.20.0
+pydantic==2.8.2
+pydantic_core==2.20.1
 Pygments==2.18.0
+pyparsing==3.1.2
 python-dotenv==1.0.1
 python-multipart==0.0.9
 PyYAML==6.0.1

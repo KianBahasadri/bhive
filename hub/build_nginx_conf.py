@@ -1,7 +1,7 @@
 import json
 import nginxparser_eb
 
-with open("build/bhive_data.json") as file:
+with open("bhive_data.json") as file:
   bhive_data = json.loads(file.read())
 
 with open("nginx_default_conf.txt") as file:
@@ -10,7 +10,7 @@ with open("nginx_default_conf.txt") as file:
 for block in nginx_conf:
   if block[0] == ['server']:
     for block2 in block[1]:
-      if type(block2[0]) == list and block2[0][0] == 'location': 
+      if isinstance(block2[0], list) and block2[0][0] == 'location': 
         location_list = block2
 
 
@@ -22,7 +22,7 @@ for service in bhive_data['services'].items():
   location_list.append(['location', f"/{name}"])
   location_list.append([['proxy_pass', f"http://127.0.0.1:{port}"]])
 
-with open("build/bhive_data.json", 'w') as file:
+with open("build/nginx_bhive.conf", 'w') as file:
   file.write(nginxparser_eb.dumps(nginx_conf))
   file.truncate()
 
