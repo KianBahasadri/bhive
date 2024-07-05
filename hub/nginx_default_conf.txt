@@ -10,7 +10,8 @@ server {
     proxy_pass http://127.0.0.1:8001;
   }
   location / {
-    index /etc/nginx/html/home.html;
+    root /etc/nginx/html;
+    index home.html;
   }
 }
 
