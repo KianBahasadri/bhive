@@ -37,11 +37,11 @@ apt install nginx
 echo
 echo Sym-Linking bhive_data.json
 userdo ln -sf bhive_data_empty.json bhive_data.json
-# This is required for json2nginx.py
+# This is required for build_nginx_conf.py
 
 echo
 echo Building Nginx conf
-userdo python3 json2nginx.py
+userdo python3 build_nginx_conf.py
 
 echo
 echo Sym-Linking nginx conf to buildpath
