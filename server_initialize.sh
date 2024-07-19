@@ -1,26 +1,21 @@
 #!/bin/bash
 
+set -e
+
 if [[ $(whoami) != 'root' ]]
 then
-  echo this script needs to be run as root
+  echo To run this script, please ensure you have:
+  echo 1. Run it as root
   exit 1
 fi
 
-if [[ $# != 1 ]]
-then
-  echo 'Usage: ./server_initialize.sh <ssh private key>'
-  exit 1
-fi
+echo apt updating and upgrading
+apt update
+apt upgrade -y
 
 echo
 echo Installing Required Packages
-sudo apt install unattended-upgrades
-echo TODO: make sure this auto configures or do it manually if not
-
-echo
-echo Setting Permissions on Keyfile
-keyfile="$1"
-chmod 400 "$keyfile"
+apt install unattended-upgrades
 
 echo
 echo Running Hardware Diagnostic
@@ -39,23 +34,22 @@ diagnostic=$(cat <<- END
 {
   "cores": $cores,
   "ram": $ram,
-  "free space": $freespace,
-  "total space": $totalspace
+  "free_space": $freespace,
+  "total_space": $totalspace
 }
 END
 )
 
 echo
 echo Sending message to https://bahasadri.com/add-server
-curl -x POST https://bahasadri.com/add-server \
+curl -s -x POST https://bahasadri.com/add-server \
      -d "$diagnostic" \
      -H "Content-Type: application/json" \
-     -o ~/ssh_key.pem
-chmod 400 ~/ssh_key.pem
+     -o "$HOME/ssh_key.pem"
+chmod 400 "$HOME/ssh_key.pem"
 
 echo
-echo Openining ssh access from orchestrator server
-
+echo Openining ssh access from hub
 ssh -N -o StrictHostKeyChecking=accept-new -R localhost:0:localhost:22 ssh.bahasadri.com -i ssh_key.pem
 
 echo

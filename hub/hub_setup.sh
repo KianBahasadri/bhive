@@ -24,7 +24,13 @@ echo """
 echo
 user="$1"
 echo Using User: "$user"
-function userdo() { setpriv --reuid="$user" "$@"; }
+eval "function userdo() { setpriv --reuid=$user --regid=$user --init-groups"' $@; }'
+export -f userdo
+
+echo
+echo Setting Environment Variables
+HOME=$(su $user -c 'echo $HOME')
+export HOME
 
 echo 
 echo Updating Packages
@@ -34,14 +40,14 @@ apt upgrade -y
 
 echo
 echo Setting buildpath
-userdo mkdir build
+userdo mkdir -p build
 export buildpath=$(realpath ./build)
 echo Buildpath Set: "$buildpath"
 
 echo Running Setup Security
-./hub_setup_security.sh "$user"
+./hub_setup_security.sh
 echo Running Setup Proxy
-./hub_setup_proxy.sh "$user"
+./hub_setup_proxy.sh
 
 echo
 echo The hub has been prepared

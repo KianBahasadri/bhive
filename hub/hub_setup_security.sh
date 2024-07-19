@@ -9,11 +9,6 @@ then
 fi
 
 echo
-user="$1"
-echo Using User: "$user"
-function userdo() { setpriv --reuid="$user" "$@"; }
-
-echo
 echo Setting up fail2ban
 apt install -y fail2ban
 echo Using default fail2ban configs for now

@@ -1,9 +1,6 @@
 {
-  "last updated": "2024-06-28",
-
   "servers": [
     {
-      "owner": "kian",
       "service ids": [1],
       "sshport": 49000,
       "resources": {

@@ -9,11 +9,6 @@ then
 fi
 
 echo
-user="$1"
-echo Using User: "$user"
-function userdo() { setpriv --reuid="$user" "$@"; }
-
-echo
 echo Installing Python pip and venv
 apt install -y python3-pip python3-venv
 
@@ -22,20 +17,27 @@ echo Creating venv
 userdo python3 -m venv venv
 
 echo
-echo Adding venv to PATH
-echo "export PATH=$(realpath venv)/bin:$PATH" >> "$HOME/.bash_profile"
-source "$HOME/.bash_profile"
+echo Adding source venv to bash startup file
+if [[ -f "$HOME/.profile" ]]
+then
+  bashstartup="$HOME/.profile"
+else
+  bashstartup="$HOME/.bash_profile"
+fi
+echo "Bash startup file detected as: $bashstartup"
+echo "source $(realpath venv)/bin/activate" >> "$bashstartup"
+source "$bashstartup"
 
 echo
 echo Installing python packages
-userdo pip install -r requirements.txt
+pip install -r requirements.txt
 
 echo
 echo Installing Nginx
 apt install nginx
 
 echo
-echo Sym-Linking bhive_data.json
+echo Sym-Linking bhive_data_empty.json
 userdo ln -sf bhive_data_empty.json bhive_data.json
 # This is required for build_nginx_conf.py
 
@@ -54,9 +56,19 @@ ln -sf "$(realpath keys/bahasadri.com.crt)" /etc/nginx/ssl/bahasadri.com.crt
 ln -sf "$(realpath keys/bahasadri.com.key)" /etc/nginx/ssl/bahasadri.com.key
 
 echo
-echo Sym-Linking home.html
+echo Sym-Linking bhive_data.json
 mkdir -p /etc/nginx/html
-ln -sf "$(realpath home.html)" /etc/nginx/html/home.html
+ln -sf "$(realpath bhive_data.json)" /etc/nginx/html/bhive_data.json
+
+echo
+echo Making fastapi logging directory
+mkdir -p /var/log/fastapi
+chmod 755 /var/log/fastapi
+
+echo
+echo Starting fastapi add-server endpoint
+userdo fastapi run add_server.py --port 8001 &> /var/log/fastapi/add_server.log &
+chmod 666 /var/log/fastapi/add_server.log
 
 echo
 echo Proxy Setup Finished
