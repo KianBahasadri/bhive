@@ -1,0 +1,25 @@
+order of deployment:
+1. saltstack master -- will be used to automate everything else
+2. wireguard
+3. docker swarm
+4. traefik
+
+## deployment steps:
+
+salt master init:
+1. wget https://repo.saltproject.io/bootstrap/stable/bootstrap-salt.sh
+2. ./bootstrap-salt.sh -P stable 3007.1 (this installs salt-minion too)
+
+wireguard init:
+1. run wireguard salt state
+2. 
+
+
+
+
+note: for client wireguard setup, check if its behind a NAT, and if thats the case, set wiregaurd's persistantkeepalive to 25 seconds
+
+
+
+
+lastly: migrate hub to openbsd
