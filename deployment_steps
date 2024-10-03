@@ -7,19 +7,24 @@ order of deployment:
 ## deployment steps:
 
 salt master init:
-1. wget https://repo.saltproject.io/bootstrap/stable/bootstrap-salt.sh
-2. ./bootstrap-salt.sh -P stable 3007.1 (this installs salt-minion too)
-
-wireguard init:
-1. run wireguard salt state
-2. 
+wget https://repo.saltproject.io/bootstrap/stable/bootstrap-salt.sh && chmod +x bootstrap-salt.sh && sudo ./bootstrap-salt.sh -M stable 3007.1
 
 
+salt minion command:
+wget https://repo.saltproject.io/bootstrap/stable/bootstrap-salt.sh && chmod +x bootstrap-salt.sh && sudo ./bootstrap-salt.sh -P stable 3007.1
+
+- apply top.sls
 
 
-note: for client wireguard setup, check if its behind a NAT, and if thats the case, set wiregaurd's persistantkeepalive to 25 seconds
+next up:
+use salt pillar to join swarm from worker node
 
 
+useful docs: https://docs.saltproject.io/en/latest/topics/tutorials/walkthrough.html#tutorial-salt-walk-through
 
 
-lastly: migrate hub to openbsd
+todo:
+- for client wireguard setup, check if its behind a NAT, and if thats the case, set wiregaurd's persistantkeepalive to 25 seconds
+- deploy authelia
+- lastly: migrate hub to openbsd
+
