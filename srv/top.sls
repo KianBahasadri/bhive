@@ -1,16 +1,17 @@
 base:
   '*':
-    - install_docker
-    - configure_fail2ban
+    - docker
+    - fail2ban
+    - wireguard
 
-  'hub-node':
-    - wireguard_host
-    - docker_swarm_init
-    - deploy_traefik
+  'master':
+    - wireguard.host
+    - docker.swarm_init
+    - traefik
 
-  'worker-node*':
-    - install_unattended_upgrades
-    - wireguard_client
-    - configure_iptables
-    - docker_swarm_join
+  'minion*':
+    - unattended_upgrades
+    - wireguard.client
+    - iptables
+    - docker.swarm_join
 
