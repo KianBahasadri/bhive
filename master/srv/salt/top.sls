@@ -1,16 +1,16 @@
 base:
   '*':
-    - docker
     - fail2ban
+    - unattended_upgrades
     - wireguard
+    - docker
 
   'master':
     - wireguard.host
-    - docker.swarm_init
-    - traefik
+    #- docker.swarm_init
+    #- traefik
 
   'minion*':
-    - unattended_upgrades
     - wireguard.client
     - iptables
     - docker.swarm_join

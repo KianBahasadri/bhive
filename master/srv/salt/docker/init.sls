@@ -1,9 +1,9 @@
-docker:
+docker_install:
   pkg.installed:
     - name: docker.io
 
 docker_service:
   service.running:
-    -name: docker
-    -enable: true
+    - name: docker
+    - enable: true
 

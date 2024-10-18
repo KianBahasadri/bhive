@@ -1,0 +1,4 @@
+unattended-upgrades
+fail2ban
+docker.io
+docker-compose-plugin

@@ -1,6 +1,13 @@
-title Creating a New Minion
-
+title Creating A Minion
+bottomparticipants 
 actor add_minion.sh
+participant wireguard
+boundary wg_interface
+control Master_API 1
+entity Master
+control Master_API 2
+
+[->add_minion.sh:
 activate add_minion.sh
 add_minion.sh->wireguard: Create Priv&Pub Keys
 add_minion.sh<--wireguard:
@@ -13,12 +20,15 @@ wireguard-->Master_API 1:
 add_minion.sh<--Master_API 1: "Here's your wg ip" <wg ip>
 deactivate Master_API 1
 add_minion.sh->wireguard: Create wg Conf and Interface\n Start wireguard as a daemon
+wireguard->>*wg_interface:
+note over wg_interface: PersistentKeepAlive
+activate wg_interface
 add_minion.sh<--wireguard:
-add_minion.sh->Master_API 2: "Add me as a minion" <ssh private key>
+add_minion.sh->wg_interface: Forward: "Add me as a minion" <ssh private key>
+wg_interface->Master_API 2: "Add me as a minion" <ssh private key>
 activate Master_API 2
-Master_API 2->Master: Add minion to \n Salt profiles.d
-Master-->Master_API 2:
 Master_API 2->Salt-cloud: *Gru Mode*
 Master_API 2<--Salt-cloud: say lesss
-add_minion.sh<--Master_API 2: 200 Okay
+wg_interface<--Master_API 2: Forward: 200 Okay
+wg_interface-->add_minion.sh: 200 Okay
 deactivate Master_API 2

@@ -12,12 +12,14 @@ apiAddress='127.0.0.1'
 masterPubKey='xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg='
 wgAddress='10.101.0.0'
 
+#apt update
+#apt upgrade -y
 #apt install wireguard -y
 wg genkey > /etc/wireguard/privatekey
 chmod 400 /etc/wireguard/privatekey
 publickey=$(cat /etc/wireguard/privatekey | wg pubkey)
 
-myWgIp=$(curl -X POST "http://$address:8000/addWireguardPeer" \
+myWgIp=$(curl -X POST "http://$apiAddress:8000/addWireguardPeer" \
   -H 'Content-Type: application/json' \
   -d "{ \"key\": \"$publickey\" }")
 

@@ -1,0 +1,24 @@
+title Creating The Master
+
+actor init.sh
+entity Master
+participant Salt-Master
+participant Salt-Minion [Master]
+participant docker-compose
+
+
+[->init.sh: git pull\nbhive & run
+init.sh->>Master: Bootstrap Salt
+Master->*Salt-Master:
+Master->*Salt-Minion [Master]:
+note over Salt-Master:Apply top level states
+Salt-Master->Salt-Minion [Master]:Install packages
+Salt-Master->Salt-Minion [Master]:Create dirs in /etc & /srv
+Salt-Master->Salt-Minion [Master]:Create wg priv&pub key
+Salt-Master->Salt-Minion [Master]:Daemonize Docker
+Salt-Minion [Master]->>*dockerd:
+Salt-Master->Salt-Minion [Master]:Start Docker Compose
+Salt-Minion [Master]->*docker-compose:
+
+activate docker-compose
+docker-compose->dockerd: Start Automation API
