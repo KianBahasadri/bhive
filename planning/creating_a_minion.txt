@@ -1,0 +1,38 @@
+title Creating A Minion
+bottomparticipants 
+actor add_minion.sh
+participant Minion
+boundary wg_interface
+control Master_API 1
+participant inotifywait
+entity Master
+control Master_API 2
+
+[->add_minion.sh: run\nscript
+activate add_minion.sh
+add_minion.sh->Minion: upgrade & \ninstall wireguard
+add_minion.sh->Minion: Create Priv&Pub Keys
+add_minion.sh->Master_API 1: "Add me as your peer"\n <pub key>
+activate Master_API 1
+Master_API 1->Master: Add peer to wg0.conf\nCheck num peers
+Master_API 1<--Master: okay; <int> peers
+inotifywait->Master: Reload wg0
+Master-->inotifywait: 
+add_minion.sh<--Master_API 1: "Here's your wg ip" <wg ip>
+deactivate Master_API 1
+add_minion.sh->Minion: Create wg0.conf\n"wg-quick up wg0"
+Minion->>*wg_interface:
+note over wg_interface: PersistentKeepAlive
+activate wg_interface
+add_minion.sh->Minion: Create Priv&Pub Keys\nFor SSH
+add_minion.sh->wg_interface: Forward: "Add me as a minion" <ssh private key>
+wg_interface->Master_API 2: "Add me as a minion" <ssh private key>
+activate Master_API 2
+Master_API 2->Saltify: *Gru Mode*
+Master_API 2<--Saltify: say lesss
+Saltify->wg_interface: Pour Some Salt On Me by Def Leppard
+wg_interface->Minion: Saltify
+wg_interface->
+wg_interface<--Master_API 2: Forward: 200 Okay
+wg_interface-->add_minion.sh: 200 Okay
+deactivate Master_API 2

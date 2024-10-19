@@ -1,0 +1,12 @@
+services:
+  automation_api:
+    build: .
+    ports:
+      - "80:80"
+    volumes:
+      - type: bind
+        source: /etc/wireguard/
+        target: /etc/wireguard/
+      - type: bind
+        source: /etc/salt/minion_keys/ 
+        target: /etc/salt/minion_keys/ 

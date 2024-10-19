@@ -1,0 +1,27 @@
+title Creating The Master
+
+actor init.sh
+participant Salt-Master
+participant Salt-Minion [Master]
+participant docker-compose
+
+
+[->init.sh: git pull\nbhive & run
+init.sh->*Salt-Master: Install Salt With\nCustom Configs
+init.sh->*Salt-Minion [Master]: Install Salt With Custom Configs
+init.sh->Salt-Master: Accept Minion [master]
+Salt-Master->Salt-Minion [Master]: Accept Minion:\n[master]
+destroy init.sh
+Salt-Minion [Master]->Salt-Master: "startup_state: highstate"
+Salt-Master->Salt-Minion [Master]:Install packages
+Salt-Master->Salt-Minion [Master]:Create wg priv&pub key
+Salt-Master->Salt-Minion [Master]:Daemonize Docker
+Salt-Minion [Master]->>*dockerd:
+Salt-Master->Salt-Minion [Master]:"docker compose up\nAutomation API"
+Salt-Minion [Master]->*docker-compose:
+activate docker-compose
+docker-compose->dockerd: Start Automation API
+dockerd-->docker-compose:
+
+deactivate docker-compose
+Salt-Master->Salt-Minion [Master]: Start wg-inotify service

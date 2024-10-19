@@ -1,0 +1,30 @@
+order of deployment:
+1. saltstack master -- will be used to automate everything else
+2. wireguard
+3. docker swarm
+4. traefik
+
+## deployment steps:
+
+salt master init:
+wget https://repo.saltproject.io/bootstrap/stable/bootstrap-salt.sh && chmod +x bootstrap-salt.sh && sudo ./bootstrap-salt.sh -M stable 3007.1
+
+
+salt minion command:
+wget https://repo.saltproject.io/bootstrap/stable/bootstrap-salt.sh && chmod +x bootstrap-salt.sh && sudo ./bootstrap-salt.sh -P stable 3007.1
+
+- apply top.sls
+
+
+next up:
+use salt pillar to join swarm from worker node
+
+
+useful docs: https://docs.saltproject.io/en/latest/topics/tutorials/walkthrough.html#tutorial-salt-walk-through
+
+
+todo:
+- for client wireguard setup, check if its behind a NAT, and if thats the case, set wiregaurd's persistantkeepalive to 25 seconds
+- deploy authelia
+- lastly: migrate hub to openbsd
+

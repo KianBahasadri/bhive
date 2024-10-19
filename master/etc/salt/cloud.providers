@@ -1,0 +1,5 @@
+my-saltify-config:
+  minion:
+    master: salt.bahasadri.com
+  driver: saltify
+
