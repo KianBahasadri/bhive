@@ -2,7 +2,7 @@ import re
 import subprocess
 import salt.cloud
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, UploadFile
 from fastapi.responses import PlainTextResponse
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from pydantic import BaseModel
@@ -13,7 +13,7 @@ app = FastAPI()
 class KeyJSON(BaseModel):
   key: str
 
-@app.post('/addWireguardPeer', response_class=PlainTextResponse)
+@app.post('/addWireguardPeer', response_class=PlainTextResponse, status_code=201)
 def addPeer(wgPubKey: KeyJSON):
   """
   "Key generation, distribution, and revocation can be handled in larger deployments using a separate service like Ansible or Kubernetes Secrets."  
@@ -33,12 +33,12 @@ def addPeer(wgPubKey: KeyJSON):
     num_peers += 1
     lines[1] = f"# {num_peers} peers registered\n"
     
-    new_ip = f"10.101.0.{num_peers}\\24"
+    new_ip = f"10.101.0.{num_peers}"
     new_peer = \
     "\n[Peer]" + \
     f"\nPublicKey = {public_key}" + \
-    f"\nAllowedIPs = {new_ip}" + \
-    "\nPersistentKeepalive = 25"
+    f"\nAllowedIPs = {new_ip}/32" + \
+    "\nPersistentKeepalive = 25\n"
 
     print(f"Adding new peer: {new_peer}")
 
@@ -57,24 +57,24 @@ def addPeer(wgPubKey: KeyJSON):
   return f"{new_ip}\n{master_public_key}"
 
 
-@app.post('/addSaltifyMinion')
-def addMinion(sshPrivKey: KeyJSON, request: Request):
+@app.post('/addSaltifyMinion', status_code=201)
+def addMinion(keyfile: UploadFile, request: Request):
   """
   1. Accept Key
   2. Give it to Saltify
   3. Profit
   """
   ip = request.client.host
-  ssh_key = sshPrivKey.key
+  ssh_key = keyfile.file.read()
 
   # TODO; validate ssh key using sshkey-tools
   # https://serverfault.com/questions/453296/how-do-i-validate-an-rsa-ssh-public-key-file-id-rsa-pub
 
   keyfile = f"/etc/salt/minion_keys/{ip}"
-  with open(keyfile, 'w') as file:
+  with open(keyfile, 'wb') as file:
     file.write(ssh_key)
-  client = salt.cloud.CloudClient() # do i need a path here?
+  client = salt.cloud.CloudClient('/etc/salt/cloud') # do i need a path here?
   client.create(provider='my-saltify-config', names=[f"minion_{ip}"],
     ssh_host=ip, ssh_username="root", key_filename=keyfile)
-  return
+  return Success
 

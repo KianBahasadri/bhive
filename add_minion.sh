@@ -11,46 +11,65 @@ fi
 apiAddress='salt.bahasadri.com'
 wgAddress='10.101.0.0'
 
-if [[ $(dpkg -l | grep wireguard) == '' ]]
+if ping -c 1 10.101.0.0 &> /dev/null
 then
-  apt update
-  apt upgrade -y
-  apt install wireguard -y
-fi
+  echo -e "\n--- Wiregaurd Host Reachable ---\n"
 
-rm /etc/wireguard/privatekey
-wg genkey > /etc/wireguard/privatekey
-chmod 400 /etc/wireguard/privatekey
-publickey=$(cat /etc/wireguard/privatekey | wg pubkey)
-echo "$publickey" > /etc/wireguard/publickey
+else
+  if [[ $(dpkg -l | grep wireguard) == '' ]]
+  then
+    apt update
+    apt upgrade -y
+    apt install wireguard -y
+  fi
+  echo -e "\n--- Wireguard is installed ---\n"
 
-api_response=$(curl -X POST "http://$apiAddress:80/addWireguardPeer" \
-  -H 'Content-Type: application/json' \
-  -d "{ \"key\": \"$publickey\" }")
+  if [[ -f /etc/wireguard/privatekey ]]
+  then
+    rm /etc/wireguard/privatekey
+  fi
+  wg genkey > /etc/wireguard/privatekey
+  chmod 400 /etc/wireguard/privatekey
+  publickey=$(cat /etc/wireguard/privatekey | wg pubkey)
+  echo "$publickey" > /etc/wireguard/publickey
+  echo -e "\n--- Wireguard keys exist ---\n"
 
-myWgIp=$(echo "$api_response" | head -n 1)
-masterPubKey=$(echo "$api_response" | tail -n 1 $api_reponse)
+  api_response=$(curl -X POST "http://$apiAddress:80/addWireguardPeer" \
+    -H 'Content-Type: application/json' \
+    -d "{ \"key\": \"$publickey\" }")
 
-cat > /etc/wireguard/wg0.conf <<- END
+  myWgIp=$(echo "$api_response" | head -n 1)
+  masterPubKey=$(echo "$api_response" | tail -n 1 $api_reponse)
+
+  cat > /etc/wireguard/wg0.conf <<- END
 [Interface]
-#Address = $myWgIp
+Address = $myWgIp/24
 PrivateKey = $(cat /etc/wireguard/privatekey)
 ListenPort = 51820
 
 [Peer]
 PublicKey = $masterPubKey
 Endpoint = $apiAddress:51820
-AllowedIPs = 10.101.0.0/24
+AllowedIPs = 10.101.0.0/32
 PersistentKeepalive = 25
 END
+  echo -e "\n--- Wireguard config exists ---\n"
 
-wg-quick down wg0
-wg-quick up wg0
-
-if ! [[ -f /root/.ssh/salt_key.pem ]]
-then
-  ssh-keygen -f /root/.ssh/salt_key.pem -q -N ""
+  wg-quick down wg0
+  wg-quick up wg0
+  echo -e "\n--- Wireguard interface is running ---\n"
 fi
 
 
+if [[ -f /root/.ssh/salt_key.pem ]]
+then
+  rm -rf /root/.ssh/salt_key.pem
+fi
+ssh-keygen -f /root/.ssh/salt_key.pem -q -N ""
+echo -e "\n--- SSH key salt_key.pem exists ---\n"
+
+curl -X 'POST' "http://$wgAddress:80/addSaltifyMinion" \
+  -H 'Content-Type: multipart/form-data' \
+  -F 'keyfile=@/root/.ssh/salt_key.pem;type=application/x-x509-ca-cert'
+echo -e "\n--- Server added to saltify ---\n"
 
