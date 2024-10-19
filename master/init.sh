@@ -1,7 +1,5 @@
 #!/bin/bash
-# - install bootstrap
-# - Salt states take care of the rest
-
+# See 'creating_the_master.txt'
 set -e
 
 if [[ $(id -u) != 0 ]]
@@ -24,35 +22,18 @@ then
   chmod +x bootstrap-salt.sh
   ./bootstrap-salt.sh -M stable 3007.1
 fi
+echo -e "\n--- Salt is installed ---"
 
-echo 'id: master' > /etc/salt/minion.d/id.conf
-echo 'master: 127.0.0.1' > /etc/salt/minion.d/master.conf
-#systemctl restart salt-minion
-#salt-key --accept=master --yes
+cp -ar ./srv/* /srv/
+cp -ar ./etc/* /etc/
+echo -e "\n--- Salt configs are in place ---"
 
-cp -ar ./srv/salt/ /srv/
-cp -ar ./etc/salt/ /etc/
-
-echo '''
---------------------------
-
-
-
-#apt update
-#apt upgrade -y
-#cat package_list.txt | xargs apt install -y
+if [[ $(salt-key --list=accepted | grep master) == '' ]]
+then
+  systemctl restart salt-minion
+  sleep 2
+  salt-key --accept=master --yes
+fi
+echo -e "\n--- Salt minion [master] is added ---"
 
 
-wg genkey > /etc/wireguard/privatekey
-chmod 400 /etc/wireguard/privatekey
-privatekey=$(cat /etc/wireguard/privatekey)
-wg pubkey < $(echo "$privatekey") > /etc/wireguard/publickey
-
-cat > /etc/wireguard/wg0.conf <<-END
-[Interface]
-PrivateKey=$privatekey
-
-systemctl enable docker
-
-docker compose up
-''' > /dev/null

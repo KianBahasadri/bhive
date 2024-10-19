@@ -1,0 +1,2 @@
+if grep -q PRIVATE_KEY wg0.conf; then exit 1; fi
+

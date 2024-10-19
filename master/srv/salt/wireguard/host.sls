@@ -21,9 +21,10 @@ wireguard_config:
     - group: root
     - mode: 600
   cmd.run:
-    - name: "sed -i s/PRIVATE_KEY/$(cat /etc/wireguard/privatekey)/ /etc/wireguard/wg0.conf"
+    - name: 'sed -ie s@PRIVATE_KEY@"$(cat /etc/wireguard/privatekey)"@ /etc/wireguard/wg0.conf'
 
 wireguard_interface:
-  service.enabled:
-    - name: wg-quick@wg0
+  cmd.run:
+    - name: wg-quick up wg0
+    - unless: ifconfig | grep wg0
 

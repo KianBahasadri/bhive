@@ -31,14 +31,16 @@ def addPeer(wgPubKey: KeyJSON):
     # second line of wg0.conf is ```<int> peers registered```
     num_peers = int(lines[1].split()[1])
     num_peers += 1
-    lines[1] = f"# {num_peers} peers registered"
+    lines[1] = f"# {num_peers} peers registered\n"
     
-    new_ip = f"10.101.0.{num_peers}"
+    new_ip = f"10.101.0.{num_peers}\\24"
     new_peer = \
-    "[Peer]"      # implicit string concatonation is crazy bruh
-    f"PublicKey = {public_key}"
-    f"AllowedIPs = {new_ip}"
-    "PersistentKeepalive = 25"
+    "\n[Peer]" + \
+    f"\nPublicKey = {public_key}" + \
+    f"\nAllowedIPs = {new_ip}" + \
+    "\nPersistentKeepalive = 25"
+
+    print(f"Adding new peer: {new_peer}")
 
     file.seek(0)
     for line in lines:
@@ -47,8 +49,12 @@ def addPeer(wgPubKey: KeyJSON):
     
     # Add new peer without distruption
     # https://ubuntu.com/server/docs/common-tasks-in-wireguard-vpn
-    subprocess.run(['systemctl', 'reload', 'wg-quick@wg0'])
-  return new_ip
+    # subprocess.run(['systemctl', 'reload', 'wg-quick@wg0'])
+    # this happens from inotifywatch running on the host 
+
+    with open('/etc/wireguard/publickey') as file:
+      master_public_key = file.read()
+  return f"{new_ip}\n{master_public_key}"
 
 
 @app.post('/addSaltifyMinion')

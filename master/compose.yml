@@ -5,8 +5,8 @@ services:
       - "80:80"
     volumes:
       - type: bind
-        source: /etc/salt/
-        target: /etc/salt/
+        source: /etc/wireguard/
+        target: /etc/wireguard/
       - type: bind
-        source: /srv/salt/
-        target: /srv/salt/
+        source: /etc/salt/minion_keys/ 
+        target: /etc/salt/minion_keys/ 

@@ -8,34 +8,49 @@ then
 fi
 
 # TODO
-apiAddress='127.0.0.1'
-masterPubKey='xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg='
+apiAddress='salt.bahasadri.com'
 wgAddress='10.101.0.0'
 
-#apt update
-#apt upgrade -y
-#apt install wireguard -y
+if [[ $(dpkg -l | grep wireguard) == '' ]]
+then
+  apt update
+  apt upgrade -y
+  apt install wireguard -y
+fi
+
+rm /etc/wireguard/privatekey
 wg genkey > /etc/wireguard/privatekey
 chmod 400 /etc/wireguard/privatekey
 publickey=$(cat /etc/wireguard/privatekey | wg pubkey)
+echo "$publickey" > /etc/wireguard/publickey
 
-myWgIp=$(curl -X POST "http://$apiAddress:8000/addWireguardPeer" \
+api_response=$(curl -X POST "http://$apiAddress:80/addWireguardPeer" \
   -H 'Content-Type: application/json' \
   -d "{ \"key\": \"$publickey\" }")
 
-echo > /etc/wireguard/wg0.conf <<- END
+myWgIp=$(echo "$api_response" | head -n 1)
+masterPubKey=$(echo "$api_response" | tail -n 1 $api_reponse)
+
+cat > /etc/wireguard/wg0.conf <<- END
 [Interface]
-Address = $myWgIp
+#Address = $myWgIp
 PrivateKey = $(cat /etc/wireguard/privatekey)
 ListenPort = 51820
 
 [Peer]
 PublicKey = $masterPubKey
-Endpoint = $apiAddress
-AllowedIPs = 0.0.0.0/0
+Endpoint = $apiAddress:51820
+AllowedIPs = 10.101.0.0/24
+PersistentKeepalive = 25
 END
 
-systemctl enable --now wg-quick@wg0
-ssh-keygen -f /root/.ssh/salt_key.pem -q -N ""
+wg-quick down wg0
+wg-quick up wg0
+
+if ! [[ -f /root/.ssh/salt_key.pem ]]
+then
+  ssh-keygen -f /root/.ssh/salt_key.pem -q -N ""
+fi
+
 
 
